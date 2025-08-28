@@ -4,6 +4,7 @@ const defaultConfig = {
     colors: true,
     icons: true,
     transports: ['console'],
+    debug: false,
 };
 
 const colors = {
@@ -14,6 +15,7 @@ const colors = {
     debug: '\x1b[38;2;204;153;255m',
     reset: '\x1b[0m',
     dim: '\x1b[2m',
+    timestamp: '\x1b[38;2;176;138;95m',
 };
 
 const levels = {
@@ -37,26 +39,37 @@ function LeafLogger(userConfig = {}) {
 
     function formatMessage(level, message) {
         const time = config.timestamp
-            ? new Date().toLocaleTimeString('en-US', {
-                hour12: false,
+            ? new Date().toLocaleString('en-US', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
                 hour: '2-digit',
                 minute: '2-digit',
                 second: '2-digit',
+                hour12: false,
             })
             : '';
 
         const icon = config.icons ? `${icons[level]} ` : '';
         const colorStart = config.colors ? colors[level] : '';
         const colorEnd = config.colors ? colors.reset : '';
-        const dimStart = config.colors ? colors.dim : '';
-        const dimEnd = config.colors ? colors.reset : '';
+        const timestampColorStart = config.colors ? colors.timestamp : '';
+        const timestampColorEnd = config.colors ? colors.reset : '';
 
         return config.timestamp
-            ? `${dimStart}[${time}]${dimEnd} ${colorStart}${icon}${message}${colorEnd}`
+            ? `${timestampColorStart}[${time}]${timestampColorEnd} ${colorStart}${icon}${message}${colorEnd}`
             : `${colorStart}${icon}${message}${colorEnd}`;
     }
 
     function shouldLog(level) {
+        if (level === 'debug' && config.debug === true) {
+            return true;
+        }
+
+        if (level === 'debug' && config.debug === false) {
+            return false;
+        }
+
         return levels[level] <= levels[config.level];
     }
 
@@ -68,7 +81,6 @@ function LeafLogger(userConfig = {}) {
         if (config.transports.includes('console')) {
             console.log(formattedMessage);
         }
-
     }
 
     return {

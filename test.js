@@ -1,6 +1,5 @@
 const LeafLogger = require('./index.js');
 
-// Default logger
 const leaf = LeafLogger({
     level: 'info',
     timestamp: true,
@@ -15,12 +14,12 @@ leaf.error('This is an error');
 leaf.success('This is a success message');
 leaf.debug('This is a debug message (should not appear)');
 
-// Debug level logger
 const debugLeaf = LeafLogger({
-    level: 'debug',
+    level: 'info',
     timestamp: true,
     colors: true,
     icons: true,
+    debug: true,
 });
 
 console.log('\n=== Debug Logger ===');
@@ -30,7 +29,6 @@ debugLeaf.error('This is an error');
 debugLeaf.success('This is a success message');
 debugLeaf.debug('This is a debug message (should appear now)');
 
-// No colors or icons
 const minimalLeaf = LeafLogger({
     level: 'info',
     timestamp: true,
@@ -44,7 +42,6 @@ minimalLeaf.warn('This is a warning');
 minimalLeaf.error('This is an error');
 minimalLeaf.success('This is a success message');
 
-// Only icons (no colors)
 const iconsOnlyLeaf = LeafLogger({
     level: 'info',
     timestamp: true,
@@ -58,7 +55,6 @@ iconsOnlyLeaf.warn('This is a warning');
 iconsOnlyLeaf.error('This is an error');
 iconsOnlyLeaf.success('This is a success message');
 
-// No timestamp
 const noTimeLeaf = LeafLogger({
     level: 'info',
     timestamp: false,
@@ -71,3 +67,19 @@ noTimeLeaf.info('This is an info message');
 noTimeLeaf.warn('This is a warning');
 noTimeLeaf.error('This is an error');
 noTimeLeaf.success('This is a success message');
+
+// Additional test for debug disabled
+const debugDisabledLeaf = LeafLogger({
+    level: 'debug',
+    timestamp: true,
+    colors: true,
+    icons: true,
+    debug: false,
+});
+
+console.log('\n=== Debug Disabled Logger ===');
+debugDisabledLeaf.info('This is an info message');
+debugDisabledLeaf.warn('This is a warning');
+debugDisabledLeaf.error('This is an error');
+debugDisabledLeaf.success('This is a success message');
+debugDisabledLeaf.debug('This is a debug message (should not appear despite level=debug)');
