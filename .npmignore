@@ -1,0 +1,19 @@
+# IDEs
+.idea/
+.vscode/
+
+# Development files
+test/
+tests/
+*.test.js
+*.spec.js
+
+# Configuration
+.eslintrc*
+.prettierrc*
+.editorconfig
+
+# Other
+.git/
+*.md
+.env

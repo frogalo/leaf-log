@@ -1,0 +1,16 @@
+# IDEs
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Node.js
+node_modules/
+npm-debug.log*
+.yarn-integrity
+.env
+dist/
+
+# OS
+.DS_Store
+Thumbs.db

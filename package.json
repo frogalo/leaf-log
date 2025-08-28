@@ -1,0 +1,16 @@
+{
+  "name": "@kubaivo/leaf-log",
+  "version": "1.0.2",
+  "description": "A minimal logging package with icons",
+  "main": "index.js",
+  "scripts": {
+    "test": "node test.js"
+  },
+  "keywords": [
+    "logger",
+    "logging",
+    "leaf"
+  ],
+  "author": "Jakub Urbański",
+  "license": "MIT"
+}
