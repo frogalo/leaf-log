@@ -17,3 +17,5 @@ tests/
 .git/
 *.md
 .env
+
+preview.png

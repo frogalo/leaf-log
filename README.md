@@ -3,7 +3,7 @@
 A lightweight, customizable logger with colorful output and emoji icons for Node.js applications.
 
 
-![LeafLogger Preview](preview.png)
+![LeafLogger Preview](https://raw.githubusercontent.com/frogalo/leaf-log/refs/heads/main/preview.png)
 
 
 ## Features
@@ -18,7 +18,7 @@ A lightweight, customizable logger with colorful output and emoji icons for Node
 ## Installation
 
 ```bash
-npm install leaf-logger
+npm install @kubaivo/leaf-log
 ```
 
 ## Usage
