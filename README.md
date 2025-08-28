@@ -47,6 +47,7 @@ const logger = LeafLogger({
     timestamp: true,    // Show timestamps
     colors: true,       // Enable colored output
     icons: true,        // Show emoji icons
+    debug: false        // Enable/disable debug messages independently
 });
 ```
 
@@ -74,7 +75,21 @@ const debugLogger = LeafLogger({ level: 'debug' }); // Shows all messages
 | `icons` | boolean | `true` | Show/hide emoji icons |
 
 ### Examples
+**Enable debug messages regardless of level**
+```javascript
+const debugLogger = LeafLogger({
+level: 'info',
+debug: true  // Debug messages will show even though level is 'info'
+});
+```
 
+**Disable debug messages completely**
+```javascript
+const noDebugLogger = LeafLogger({
+level: 'debug',
+debug: false  // Debug messages will not show even though level is 'debug'
+});
+```
 #### Minimal Output
 ```javascript
 const minimalLogger = LeafLogger({
