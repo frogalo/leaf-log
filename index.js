@@ -3,19 +3,7 @@ const defaultConfig = {
     timestamp: true,
     colors: true,
     icons: true,
-    transports: ['console'],
     debug: false,
-};
-
-const colors = {
-    error: '\x1b[38;2;255;85;85m',
-    warn: '\x1b[38;2;255;204;102m',
-    info: '\x1b[38;2;102;204;255m',
-    success: '\x1b[38;2;102;255;153m',
-    debug: '\x1b[38;2;204;153;255m',
-    reset: '\x1b[0m',
-    dim: '\x1b[2m',
-    timestamp: '\x1b[38;2;176;138;95m',
 };
 
 const levels = {
@@ -26,102 +14,88 @@ const levels = {
     debug: 3,
 };
 
-const icons = {
-    error: '🍁',
-    warn: '🍂',
-    info: '🍃',
-    success: '🌿',
-    debug: '🌱',
-};
-
-async function resolveNestedPromises(obj) {
-    if (obj === null || obj === undefined) return obj;
-
-    if (obj instanceof Promise) {
-        return await obj;
-    }
-
-    if (typeof obj !== 'object') {
-        return obj;
-    }
-
-    if (Array.isArray(obj)) {
-        const resolvedArray = [];
-        for (const item of obj) {
-            resolvedArray.push(await resolveNestedPromises(item));
-        }
-        return resolvedArray;
-    }
-
-    const resolvedObj = {};
-    for (const [key, value] of Object.entries(obj)) {
-        resolvedObj[key] = await resolveNestedPromises(value);
-    }
-    return resolvedObj;
-}
+const {formatMessage} = require('./formatter');
+const {processData, resolveNestedPromises} = require('./dataHandler');
 
 function LeafLogger(userConfig = {}) {
     const config = {...defaultConfig, ...userConfig};
 
-    function formatMessage(level, message) {
-        const time = config.timestamp
-            ? new Date().toLocaleString('en-US', {
-                year: 'numeric',
-                month: '2-digit',
-                day: '2-digit',
-                hour: '2-digit',
-                minute: '2-digit',
-                second: '2-digit',
-                hour12: false,
-            })
-            : '';
-
-        const icon = config.icons ? `${icons[level]} ` : '';
-        const colorStart = config.colors ? colors[level] : '';
-        const colorEnd = config.colors ? colors.reset : '';
-        const timestampColorStart = config.colors ? colors.timestamp : '';
-        const timestampColorEnd = config.colors ? colors.reset : '';
-
-        return config.timestamp
-            ? `${timestampColorStart}[${time}]${timestampColorEnd} ${colorStart}${icon}${message}${colorEnd}`
-            : `${colorStart}${icon}${message}${colorEnd}`;
-    }
-
     function shouldLog(level) {
-        if (level === 'debug' && config.debug === true) {
-            return true;
-        }
-
-        if (level === 'debug' && config.debug === false) {
-            return false;
-        }
-
+        if (level === 'debug') return config.debug;
         return levels[level] <= levels[config.level];
     }
 
-    async function log(level, message, data = null) {
+    function log(level, message, data = null) {
         if (!shouldLog(level)) return;
 
         let fullMessage = message;
 
         if (data !== null) {
-            const resolvedData = await resolveNestedPromises(data);
-            fullMessage += ' ' + JSON.stringify(resolvedData, null, 2);
+            const hasPromises = checkForPromises(data);
+
+            if (hasPromises) {
+                handleAsyncLog(level, fullMessage, data).catch(error => {
+                    const errorMessage = `Error processing async log: ${error.message}`;
+                    const formattedMessage = formatMessage('error', errorMessage, config);
+                    console.log(formattedMessage);
+                });
+                return;
+            }
+
+            const borderedData = processData(data);
+            if (borderedData) {
+                fullMessage += '\n' + borderedData;
+            }
         }
 
-        const formattedMessage = formatMessage(level, fullMessage);
+        const formattedMessage = formatMessage(level, fullMessage, config);
+        console.log(formattedMessage);
+    }
 
-        if (config.transports.includes('console')) {
+    function checkForPromises(obj) {
+        if (obj instanceof Promise) return true;
+        if (typeof obj !== 'object' || obj === null) return false;
+
+        if (Array.isArray(obj)) {
+            return obj.some(item => checkForPromises(item));
+        }
+
+        return Object.values(obj).some(value => checkForPromises(value));
+    }
+
+    async function handleAsyncLog(level, message, data) {
+        try {
+            const resolvedData = await resolveNestedPromises(data);
+            const borderedData = processData(resolvedData);
+            let fullMessage = message;
+            if (borderedData) {
+                fullMessage += '\n' + borderedData;
+            }
+            const formattedMessage = formatMessage(level, fullMessage, config);
+            console.log(formattedMessage);
+        } catch (error) {
+            const errorMessage = `Error processing async log: ${error.message}`;
+            const formattedMessage = formatMessage('error', errorMessage, config);
             console.log(formattedMessage);
         }
     }
 
+    function createLogMethod(level) {
+        return function (message, data = null) {
+            log(level, message, data);
+        };
+    }
+
     return {
-        error: async (message, data) => log('error', message, data),
-        warn: async (message, data) => log('warn', message, data),
-        info: async (message, data) => log('info', message, data),
-        success: async (message, data) => log('success', message, data),
-        debug: async (message, data) => log('debug', message, data),
+        error: createLogMethod('error'),
+        warn: createLogMethod('warn'),
+        info: createLogMethod('info'),
+        success: createLogMethod('success'),
+        debug: createLogMethod('debug'),
+
+        updateConfig(newConfig) {
+            Object.assign(config, newConfig);
+        }
     };
 }
 
