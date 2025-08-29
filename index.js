@@ -27,8 +27,8 @@ const levels = {
 };
 
 const icons = {
-    error: '🍂',
-    warn: '🍁',
+    error: '🍁',
+    warn: '🍂',
     info: '🍃',
     success: '🌿',
     debug: '🌱',
