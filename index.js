@@ -73,12 +73,14 @@ function LeafLogger(userConfig = {}) {
         return levels[level] <= levels[config.level];
     }
 
-    function log(level, message, data = null) {
+    async function log(level, message, data = null) {
         if (!shouldLog(level)) return;
 
         let fullMessage = message;
+
         if (data !== null) {
-            fullMessage += ' ' + JSON.stringify(data, null, 2);
+            const resolvedData = data instanceof Promise ? await data : data;
+            fullMessage += ' ' + JSON.stringify(resolvedData, null, 2);
         }
 
         const formattedMessage = formatMessage(level, fullMessage);
@@ -89,11 +91,11 @@ function LeafLogger(userConfig = {}) {
     }
 
     return {
-        error: (message, data) => log('error', message, data),
-        warn: (message, data) => log('warn', message, data),
-        info: (message, data) => log('info', message, data),
-        success: (message, data) => log('success', message, data),
-        debug: (message, data) => log('debug', message, data),
+        error: async (message, data) => log('error', message, data),
+        warn: async (message, data) => log('warn', message, data),
+        info: async (message, data) => log('info', message, data),
+        success: async (message, data) => log('success', message, data),
+        debug: async (message, data) => log('debug', message, data),
     };
 }
 
