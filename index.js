@@ -35,7 +35,7 @@ const icons = {
 };
 
 function LeafLogger(userConfig = {}) {
-    const config = { ...defaultConfig, ...userConfig };
+    const config = {...defaultConfig, ...userConfig};
 
     function formatMessage(level, message) {
         const time = config.timestamp
@@ -73,10 +73,15 @@ function LeafLogger(userConfig = {}) {
         return levels[level] <= levels[config.level];
     }
 
-    function log(level, message) {
+    function log(level, message, data = null) {
         if (!shouldLog(level)) return;
 
-        const formattedMessage = formatMessage(level, message);
+        let fullMessage = message;
+        if (data !== null) {
+            fullMessage += ' ' + JSON.stringify(data, null, 2);
+        }
+
+        const formattedMessage = formatMessage(level, fullMessage);
 
         if (config.transports.includes('console')) {
             console.log(formattedMessage);
@@ -84,11 +89,11 @@ function LeafLogger(userConfig = {}) {
     }
 
     return {
-        error: (message) => log('error', message),
-        warn: (message) => log('warn', message),
-        info: (message) => log('info', message),
-        success: (message) => log('success', message),
-        debug: (message) => log('debug', message),
+        error: (message, data) => log('error', message, data),
+        warn: (message, data) => log('warn', message, data),
+        info: (message, data) => log('info', message, data),
+        success: (message, data) => log('success', message, data),
+        debug: (message, data) => log('debug', message, data),
     };
 }
 

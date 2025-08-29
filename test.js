@@ -83,3 +83,46 @@ debugDisabledLeaf.warn('This is a warning');
 debugDisabledLeaf.error('This is an error');
 debugDisabledLeaf.success('This is a success message');
 debugDisabledLeaf.debug('This is a debug message (should not appear despite level=debug)');
+
+// Test object logging
+const objectLeaf = LeafLogger({
+    level: 'debug',
+    timestamp: true,
+    colors: true,
+    icons: true,
+});
+
+console.log('\n=== Object Logging Test ===');
+objectLeaf.info('User login', {
+    userId: 12345,
+    username: 'john_doe',
+    timestamp: new Date().toISOString(),
+    ip: '192.168.1.1'
+});
+
+objectLeaf.error('Database connection failed', {
+    host: 'localhost',
+    port: 5432,
+    database: 'myapp',
+    error: 'Connection timeout'
+});
+
+objectLeaf.debug('API request', {
+    method: 'GET',
+    url: '/api/users/123',
+    headers: {
+        'content-type': 'application/json',
+        'authorization': 'Bearer token123'
+    },
+    queryParams: {
+        limit: 10,
+        offset: 0
+    }
+});
+
+objectLeaf.warn('Deprecated feature used', {
+    feature: 'getUserInfo',
+    version: '1.0.0',
+    replacement: 'getUserProfile',
+    expires: '2025-12-31'
+});
