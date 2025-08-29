@@ -4,6 +4,20 @@ A lightweight, customizable logger with colorful output and emoji icons for Node
 
 ![LeafLogger Preview](https://raw.githubusercontent.com/frogalo/leaf-log/refs/heads/main/preview.png)
 
+
+- [Installation](#installation)
+- [Usage](#usage)
+    - [Basic Usage](#basic-usage)
+    - [Object Logging](#object-logging)
+    - [Configuration](#configuration)
+    - [Log Levels](#log-levels)
+    - [Debug Configuration](#debug-configuration)
+    - [Promise Handling](#promise-handling)
+- [Configuration Options](#configuration-options)
+- [Examples](#examples)
+- [Log Levels Reference](#log-levels-reference)
+- [License](#license)
+
 ## Features
 
 -  Colorful log messages with RGB precision
@@ -12,6 +26,7 @@ A lightweight, customizable logger with colorful output and emoji icons for Node
 -  Multiple log levels (error, warn, info, success, debug)
 -  Configurable debug mode
 -  Object logging support
+-  Promise handling
 -  Zero dependencies
 
 ## Installation
@@ -103,7 +118,25 @@ const noDebugLogger = LeafLogger({
 });
 ```
 
-### Configuration Options
+### Promise Handling
+
+LeafLogger automatically handles Promise values in logged data by awaiting them before serialization:
+
+```javascript
+const logger = LeafLogger({ level: 'debug' });
+
+// Logging a Promise directly
+const userData = Promise.resolve({ id: 123, name: 'John' });
+logger.info('User data fetched', userData);
+
+// Logging an object containing Promises
+logger.info('API response', {
+    status: 200,
+    data: userData
+});
+```
+
+## Configuration Options
 
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
@@ -113,7 +146,7 @@ const noDebugLogger = LeafLogger({
 | `icons` | boolean | `true` | Show/hide emoji icons |
 | `debug` | boolean | `false` | Enable/disable debug messages independently |
 
-### Examples
+## Examples
 
 #### Minimal Output
 ```javascript
@@ -161,7 +194,7 @@ logger.info('User action', {
 
 #### Debug Control
 ```javascript
-const logger = LeafLogger({ 
+const logger = LeafLogger({
     level: 'info',
     debug: true
 });

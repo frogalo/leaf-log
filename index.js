@@ -34,6 +34,32 @@ const icons = {
     debug: '🌱',
 };
 
+async function resolveNestedPromises(obj) {
+    if (obj === null || obj === undefined) return obj;
+
+    if (obj instanceof Promise) {
+        return await obj;
+    }
+
+    if (typeof obj !== 'object') {
+        return obj;
+    }
+
+    if (Array.isArray(obj)) {
+        const resolvedArray = [];
+        for (const item of obj) {
+            resolvedArray.push(await resolveNestedPromises(item));
+        }
+        return resolvedArray;
+    }
+
+    const resolvedObj = {};
+    for (const [key, value] of Object.entries(obj)) {
+        resolvedObj[key] = await resolveNestedPromises(value);
+    }
+    return resolvedObj;
+}
+
 function LeafLogger(userConfig = {}) {
     const config = {...defaultConfig, ...userConfig};
 
@@ -79,7 +105,7 @@ function LeafLogger(userConfig = {}) {
         let fullMessage = message;
 
         if (data !== null) {
-            const resolvedData = data instanceof Promise ? await data : data;
+            const resolvedData = await resolveNestedPromises(data);
             fullMessage += ' ' + JSON.stringify(resolvedData, null, 2);
         }
 

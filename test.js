@@ -68,7 +68,6 @@ noTimeLeaf.warn('This is a warning');
 noTimeLeaf.error('This is an error');
 noTimeLeaf.success('This is a success message');
 
-// Additional test for debug disabled
 const debugDisabledLeaf = LeafLogger({
     level: 'debug',
     timestamp: true,
@@ -84,7 +83,6 @@ debugDisabledLeaf.error('This is an error');
 debugDisabledLeaf.success('This is a success message');
 debugDisabledLeaf.debug('This is a debug message (should not appear despite level=debug)');
 
-// Test object logging
 const objectLeaf = LeafLogger({
     level: 'debug',
     timestamp: true,
@@ -125,4 +123,20 @@ objectLeaf.warn('Deprecated feature used', {
     version: '1.0.0',
     replacement: 'getUserProfile',
     expires: '2025-12-31'
+});
+
+console.log('\n=== Promise Handling Test ===');
+
+const mockPromise = Promise.resolve({
+    id: 'game-123',
+    name: 'Test Game',
+    status: 'active'
+});
+
+objectLeaf.info('Game data fetched', mockPromise);
+
+objectLeaf.info('API response with nested promise', {
+    statusCode: 200,
+    data: mockPromise,
+    timestamp: new Date().toISOString()
 });
