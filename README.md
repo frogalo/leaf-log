@@ -17,7 +17,7 @@ A lightweight, customizable logger with colorful output and emoji icons for Node
 ## Installation
 
 ```bash
-npm install @kubaivo/leaf-log
+npm install leaf-logger
 ```
 
 ## Usage
